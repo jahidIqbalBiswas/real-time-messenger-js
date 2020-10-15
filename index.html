@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>real time messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Share+Tech&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Contrail+One&family=Lobster&family=Oswald:wght@400;500;600;700&family=Share+Tech&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* width */
+        
+         ::-webkit-scrollbar {
+            height: 6px;
+        }
+        /* Track */
+        
+         ::-webkit-scrollbar-track {
+            background: #bfdffd;
+            border-radius: 2px;
+        }
+        /* Handle */
+        
+         ::-webkit-scrollbar-thumb {
+            background: dodgerblue;
+            border-radius: 2px;
+        }
+        /* Handle on hover */
+        
+         ::-webkit-scrollbar-thumb:hover {
+            background: rgba(2, 42, 173, 0.788);
+        }
+        
+        .wrapper {
+            max-width: 800px;
+            width: 90%;
+            margin: auto;
+            font-family: 'Oswald', sans-serif;
+        }
+        
+        h1 {
+            font-size: 30px;
+            text-transform: uppercase;
+            color: dodgerblue;
+            text-align: center;
+        }
+        
+        p {
+            margin: 50px 0 10px 0px;
+            color: rgb(255, 0, 106);
+            text-transform: capitalize;
+        }
+        
+        #box::first-line {
+            text-align: right;
+            color: orangered;
+            font-family: 'Contrail One', cursive;
+            font-size: 25px;
+            letter-spacing: 0px;
+        }
+        
+        #box {
+            display: block;
+            border-bottom-left-radius: 5px;
+            padding: 10px;
+            font-size: 20px;
+            line-height: 40px;
+            color: gray;
+            letter-spacing: 1px;
+            font-weight: 400;
+            overflow-x: auto;
+            white-space: nowrap;
+            text-overflow: clip;
+        }
+        
+        #input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid silver;
+            padding: 10px;
+            padding-left: 2px;
+            padding-top: 20px;
+            outline: none;
+            margin-top: 20px;
+            z-index: 999;
+            display: block;
+            margin: auto;
+            font-family: 'Contrail One', cursive;
+            font-size: 20px;
+            color: rgb(2, 163, 136);
+        }
+        
+        #input::placeholder {
+            color: dodgerblue;
+            transition: .5s;
+            font-size: 20px;
+            text-transform: capitalize;
+            font-family: 'Share Tech', sans-serif;
+        }
+        
+        #input:focus::placeholder {
+            transform: translateY(-25px);
+            font-size: 16px;
+            visibility: visible;
+            opacity: 1;
+            color: green;
+            display: block
+        }
+        
+        #input:focus {
+            border-bottom: 2px solid dodgerblue;
+        }
+        
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>real time messenger</h1>
+        <p>type message and press enter</p>
+
+        <div><input id="input" placeholder="message" /></div>
+
+        <div id="box">
+
+        </div>
+
+    </div>
+
+    <script src=https://cdn.pubnub.com/sdk/javascript/pubnub.4.28.2.min.js></script>
+    <script>
+        (function() {
+            var pubnub = new PubNub({
+                publishKey: 'demo',
+                subscribeKey: 'demo'
+            });
+
+            function $(id) {
+                return document.getElementById(id);
+            }
+            var box = $('box'),
+                input = $('input'),
+                channel = '10chat-demo';
+            pubnub.addListener({
+                message: function(obj) {
+                    box.innerHTML = ('' + obj.message).replace(/[<>]/g, '') + '<br>' + box.innerHTML
+                }
+            });
+            pubnub.subscribe({
+                channels: [channel]
+            });
+            input.addEventListener('keyup', function(e) {
+                if ((e.keyCode || e.charCode) === 13) {
+                    pubnub.publish({
+                        channel: channel,
+                        message: input.value,
+                        x: (input.value = '')
+                    });
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>
